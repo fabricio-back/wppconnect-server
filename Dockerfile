@@ -26,25 +26,19 @@ FROM node:22.19.0-alpine
 WORKDIR /usr/src/wpp-server
 ENV NODE_ENV=production
 
-# Define a porta da aplicação como uma variável de ambiente
-ENV PORT=21465
+# --- A GRANDE MUDANÇA ESTÁ AQUI ---
+# Define o token de autenticação diretamente no ambiente do container.
+# TROQUE "meutoken123" PELO SEU TOKEN SIMPLES (só letras e números).
+ENV TOKEN="Ch4v3_Z4p_26#*748$dsr89WW"
 
-# Instala dependências de sistema APENAS para rodar (vips, chromium, e curl para healthcheck)
-RUN apk add --no-cache vips fftw chromium curl
+# Instala dependências de sistema APENAS para rodar
+RUN apk add --no-cache vips fftw chromium
 
-# Copia os arquivos de definição de dependências e os módulos de produção do palco 'builder'
-COPY --from=builder /usr/src/wpp-server/package.json ./
+# Copia os módulos de produção e o código compilado do palco 'builder'
 COPY --from=builder /usr/src/wpp-server/node_modules ./node_modules
-
-# Copia o código compilado do palco 'builder'
 COPY --from=builder /usr/src/wpp-server/dist ./dist
 
-# Expõe a porta definida na variável de ambiente
-EXPOSE $PORT
-
-# Adiciona a verificação de saúde (Health Check) usando a variável de ambiente
-HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD curl -f http://localhost:${PORT}/api-docs/ || exit 1
+EXPOSE 3000
 
 ENTRYPOINT ["node", "dist/server.js"]
 
