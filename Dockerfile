@@ -26,11 +26,6 @@ FROM node:22.19.0-alpine
 WORKDIR /usr/src/wpp-server
 ENV NODE_ENV=production
 
-# --- A GRANDE MUDANÇA ESTÁ AQUI ---
-# Define o token de autenticação diretamente no ambiente do container.
-# TROQUE "meutoken123" PELO SEU TOKEN SIMPLES (só letras e números).
-ENV TOKEN="Ch4v3_Z4p_26#*748$dsr89WW"
-
 # Instala dependências de sistema APENAS para rodar
 RUN apk add --no-cache vips fftw chromium
 
@@ -41,4 +36,3 @@ COPY --from=builder /usr/src/wpp-server/dist ./dist
 EXPOSE 3000
 
 ENTRYPOINT ["node", "dist/server.js"]
-
