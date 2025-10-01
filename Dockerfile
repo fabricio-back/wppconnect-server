@@ -1,6 +1,6 @@
 # --- Palco 1: Builder ---
 # Instala todas as dependências (dev e prod) e compila o projeto.
-FROM node:22-alpine AS builder
+FROM node:22.19.0-alpine AS builder
 WORKDIR /usr/src/wpp-server
 ENV NODE_ENV=development
 
@@ -22,7 +22,7 @@ RUN yarn build
 
 # --- Palco 2: Runner (Imagem Final) ---
 # Cria a imagem final apenas com o necessário para rodar.
-FROM node:22-alpine
+FROM node:22.19.0-alpine
 WORKDIR /usr/src/wpp-server
 ENV NODE_ENV=production
 
