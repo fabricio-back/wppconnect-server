@@ -8,10 +8,10 @@ ENV NODE_ENV=development
 RUN apk add --no-cache vips-dev fftw-dev gcc g++ make libc6-compat
 
 # Copia os arquivos de definição de dependências
-COPY package.json yarn.lock ./
+COPY package.json ./
 
 # Instala todas as dependências
-RUN yarn install --frozen-lockfile
+RUN yarn install
 
 # Copia o restante do código-fonte
 COPY . .
@@ -31,13 +31,14 @@ ENV NODE_ENV=production
 RUN apk add --no-cache vips fftw chromium
 
 # Copia os arquivos de definição de dependências
-COPY package.json yarn.lock ./
+COPY package.json ./
 
 # Instala APENAS as dependências de produção
-RUN yarn install --production --frozen-lockfile
+RUN yarn install --production
 
 # Copia o código compilado do palco 'builder'
 COPY --from=builder /usr/src/wpp-server/dist ./dist
 
 EXPOSE 21465
 ENTRYPOINT ["node", "dist/server.js"]
+
