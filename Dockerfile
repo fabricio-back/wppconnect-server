@@ -26,9 +26,11 @@ FROM node:22.19.0-alpine
 WORKDIR /usr/src/wpp-server
 ENV NODE_ENV=production
 
-# Instala dependências de sistema APENAS para rodar (vips e chromium)
-# Não precisamos das versões "-dev" aqui, o que economiza espaço.
-RUN apk add --no-cache vips fftw chromium
+# Define a porta da aplicação como uma variável de ambiente
+ENV PORT=21465
+
+# Instala dependências de sistema APENAS para rodar (vips, chromium, e curl para healthcheck)
+RUN apk add --no-cache vips fftw chromium curl
 
 # Copia os arquivos de definição de dependências e os módulos de produção do palco 'builder'
 COPY --from=builder /usr/src/wpp-server/package.json ./
@@ -37,6 +39,12 @@ COPY --from=builder /usr/src/wpp-server/node_modules ./node_modules
 # Copia o código compilado do palco 'builder'
 COPY --from=builder /usr/src/wpp-server/dist ./dist
 
-EXPOSE 21465
+# Expõe a porta definida na variável de ambiente
+EXPOSE $PORT
+
+# Adiciona a verificação de saúde (Health Check) usando a variável de ambiente
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD curl -f http://localhost:${PORT}/api-docs/ || exit 1
+
 ENTRYPOINT ["node", "dist/server.js"]
 
