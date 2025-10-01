@@ -30,11 +30,9 @@ ENV NODE_ENV=production
 # Não precisamos das versões "-dev" aqui, o que economiza espaço.
 RUN apk add --no-cache vips fftw chromium
 
-# Copia os arquivos de definição de dependências
-COPY package.json ./
-
-# Instala APENAS as dependências de produção
-RUN yarn install --production
+# Copia os arquivos de definição de dependências e os módulos de produção do palco 'builder'
+COPY --from=builder /usr/src/wpp-server/package.json ./
+COPY --from=builder /usr/src/wpp-server/node_modules ./node_modules
 
 # Copia o código compilado do palco 'builder'
 COPY --from=builder /usr/src/wpp-server/dist ./dist
